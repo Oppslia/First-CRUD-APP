@@ -12,10 +12,9 @@ function createTable($colum){
   $stmt = $conn->prepare("SELECT * FROM `$table` ORDER BY `$fields[1]` ASC;");
   $stmt->execute();
 
-  $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+  $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
   // Check if $result has anything in it or not (Returns a FALSE if no data in there).
-  if($result) {
     echo "<table border=1>";   // Start Table
     $firstRowPrinted = false;
 
@@ -41,7 +40,7 @@ function createTable($colum){
     }
     echo "</table>";
   }
-}
+
 
 function writeForm($activity){
   global $conn, $table, $fields;
