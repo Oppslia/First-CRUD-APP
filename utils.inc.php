@@ -8,7 +8,6 @@ function formRequest($formName){
 }
 function createTable($colum){
   global $activity, $conn, $table,$fields;
-  echo $activity . " in ".$colum.  "section";
   $stmt = $conn->prepare("SELECT * FROM `$table` ORDER BY `$fields[1]` ASC;");
   $stmt->execute();
 
@@ -17,29 +16,62 @@ function createTable($colum){
   // Check if $result has anything in it or not (Returns a FALSE if no data in there).
     echo "<table border=1>";   // Start Table
     $firstRowPrinted = false;
+   
+    
+    $myfile = fopen("myfile.csv", "w");
+    if ($colum == "DOWNLOAD"){
+      while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      //DOWNLOAD--------------------------------->
+      
+        if($firstRowPrinted == false){
+          $fileWriteString = "";
+          foreach($row as $col_name => $val) {
+            $fileWriteString .= $col_name . ",";
+          } //-For
+          fwrite($myfile, rtrim($fileWriteString, ","));
+          fwrite($myfile, "\n");
+          $firstRowPrinted = true;
+        } //-If
+      //-First Row Done
 
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-      if($firstRowPrinted == false) {
-        echo "<tr>";// Start HEADER Row
-        if ($colum != "READ"){
-        echo "<th>UPDATE</th>";}
+
+      $fileWriteString = "";
+      foreach($row as $col_name => $val) {
+          $fileWriteString .= $val . ",";
+        //else { echo "<td>$val</td>"; // Print Each VALUE
+      } //For loop end
+      fwrite($myfile, rtrim($fileWriteString, ","));
+      fwrite($myfile, "\n" );
+    } //-If
+    fclose($myfile);
+    
+    return; // exit faster without doign addition checks
+  } //<--------------------------DOWNLOAD
+
+  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        if($firstRowPrinted == false) {
+          echo "<tr>";// Start HEADER Row
+          echo "<th>UPDATE</th>";
+          echo "<th>DELETE</th>";
         foreach($row as $col_name => $val) {
           echo "<th>$col_name</th>";    // Print Each Column Name
         }
         echo "</tr>";               // END Header Row
         $firstRowPrinted = true;
       }
-      if ($colum !="READ"){
+      // fIRST ROW BS
       echo "<tr>";               // Start Row
-      echo "<td><a href='index.php?activity=".$colum."-PROCESS&id=".$row["id"]."'>".$colum."</a></td>";}
-
+      echo "<td><a href='index.php?activity="."UPDATE"."-PROCESS&id=".$row["id"]."'>"."UPDATE"."</a></td>";
+      echo "<td><a href='index.php?activity="."DELETE"."-PROCESS&id=".$row["id"]."'>"."DELETE"."</a></td>";
+      // RUNS EVERY WHILE LOOP ITERATION AND IS THE FIRST DATA ENTRY
       foreach($row as $col_name => $val) {
-        echo "<td>$val</td>";    // Print Each VALUE
-      }
-      echo "</tr>";               // Start Row
-    }
-    echo "</table>";
-  }
+        echo "<td>$val</td>"; // Print Each VALUE
+      } //For loop end
+      echo "</tr>"; // Start Row
+    }// While loop end
+    echo "</table>";   
+  }// Function Close
+    
 
 
 function writeForm($activity){
