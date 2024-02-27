@@ -16,7 +16,7 @@ $stmt->execute([$table]);
 $fields = $stmt->fetchAll(PDO::FETCH_COLUMN);
 $idIndex = array_search("id", $fields);
 unset($fields[$idIndex]); $fields = array_values($fields);
-print_r($fields);
+
 $lastField = $fields[count($fields)-1]; // sets a value equal to the last value so i don't have to use rtrim 
 // Query to retrieve all fields of the specified table
 
@@ -25,12 +25,10 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
 <html>
 <head><title>Shawns's CRUD App</title></head>
 <body>
-  
-  <a href="index.php">Home</a> | 
+  <a href="index.php?activity=READ">Home</a> |
   <a href="index.php?activity=CREATE">Create</a> | 
-  <a href="index.php?activity=READ">Read</a> | 
-  <a href="index.php?activity=UPDATE">Update</a> | 
-  <a href="index.php?activity=DELETE">Delete</a>
+  <a href="index.php?activity=DOWNLOAD">Download</a>
+
   
   <br><br>
   
@@ -38,15 +36,19 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
   //Table names = tbPeople_FirstName
   
   switch ($activity) {
+    case "DOWNLOAD":
+      createTable("DOWNLOAD");
+      //header("Location: index.php?activity=READ");
+      // header doesnt work here for some reason
+      break;
+
+
+
+
     case "CREATE":
       // C of Crud
       //Insert (SQL Language) Data!
       writeForm($activity);
-
-      
-      // Going to add forms to INSERT/CREATE new data in the DB
-      // Have those forms submit with content to add to the DB
-
     break;
 
     case "CREATE-PROCESS":
@@ -76,18 +78,13 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
         $sql .= formRequest($field) . "','" ;
       }
       
-      // $FirstName = formRequest("FirstName");
-      // $LastName = formRequest("LastName");
-      // $Email = formRequest("Email");
-      // $Phone = formRequest("Phone");
-//            INSERT INTO `tbPeople_Bob` (`First Name`, `Last Name`, `Email`, `Phone`) VALUES ('Bubba','Mann','bubba.d.mann@gmail.com','814-555-5555')
+                              //INSERT INTO `tbPeople_Bob` (`First Name`, `Last Name`, `Email`, `Phone`) VALUES ('Bubba','Mann','bubba.d.mann@gmail.com','814-555-5555')
 
-      //$sql = "INSERT INTO `$table` (`FirstName`, `LastName`, `Email`, `Phone`) VALUES ('" . $FirstName . "','" . $LastName . "','" . $Email . "','" . $Phone . "')";
+                              //$sql = "INSERT INTO `$table` (`FirstName`, `LastName`, `Email`, `Phone`) VALUES ('" . $FirstName . "','" . $LastName . "','" . $Email . "','" . $Phone . "')";
       
       $conn->exec($sql); // database go brrrrr.
-    
-      echo "<BR>".$sql."<BR>"; //echo statement cuz need to see that sweet SWEET formatting
-    
+      //echo "<BR>".$sql."<BR>"; //echo statement cuz need to see that sweet SWEET formatting
+      header("Location: index.php?activity=READ");
       
     break; // bye
 
@@ -106,7 +103,6 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
 
     
     case "UPDATE-PROCESS":
-      echo $activity . " in UPDATE PROCESS section";
     
     writeForm($activity);
     
@@ -115,9 +111,9 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
     //$conn->exec($sql);
   
     echo "<BR>UPDATE: " . formRequest("id") . "<BR><BR>";
+    
     break;
     case "UPDATE-PROCESS-PROCESS":
-      echo $activity . " in UPDATE  PROCESS section";
       $sql = "UPDATE `$table` SET ";
 //            INSERT INTO `tbPeople_Bob` (`First Name`, `Last Name`, `Email`, `Phone`) VALUES ('Bubba','Mann','bubba.d.mann@gmail.com','814-555-5555')
 // UPDATE `tbPeople_Shawn` SET `FirstName` =' FirstNameVALUE',`LastName` =' LastNameVALUE',`Email` =' EmailVALUE',`Phone` =' PhoneVALUE' WHERE id = 56
@@ -129,8 +125,10 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
       $sql .= "`$field` =' ". formRequest($field)."', ";
     }
       $sql .= "WHERE id = ".formRequest("id");
-      echo "<BR>".$sql."<BR>";
+      //echo "<BR>".$sql."<BR>";
       $conn->exec($sql);
+      header("Location: index.php?activity=READ");
+      
       break;
       
       
@@ -139,12 +137,12 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
     case "DELETE-PROCESS":
       //D of cruD
       //PROCESS for the Deleting of Data!
-      echo $activity . " in DELETE PROCESS section";
+      
 
       $sql = "DELETE FROM `tbPeople_Shawn` WHERE `id` = " .formRequest("id");
       $conn->exec($sql);
     
-      echo "<BR>DELETE: " . formRequest("id") . "<BR><BR>";
+      //echo "<BR>DELETE: " . formRequest("id") . "<BR><BR>";
     
     case "DELETE":
       //D of cruD
