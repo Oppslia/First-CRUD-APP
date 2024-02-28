@@ -14,6 +14,7 @@ $stmt->execute([$table]);
 
 // Fetch all field names
 $fields = $stmt->fetchAll(PDO::FETCH_COLUMN);
+$fieldsALL = $fields;
 $idIndex = array_search("id", $fields);
 unset($fields[$idIndex]); $fields = array_values($fields);
 
@@ -72,10 +73,10 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
      
       foreach($fields as $field){
         if ($field == $lastField){
-          $sql .= formRequest($field) . "')"; //formats last field so that it doesn't have trailing characters and closes the statement
+          $sql .= formRequest(trim($field)) . "')"; //formats last field so that it doesn't have trailing characters and closes the statement
           break; //Shawn','Seltner','smsracer10@bloob.gov','215-333-5543')
         }
-        $sql .= formRequest($field) . "','" ;
+        $sql .= formRequest(trim($field)) . "','" ;
       }
       
                               //INSERT INTO `tbPeople_Bob` (`First Name`, `Last Name`, `Email`, `Phone`) VALUES ('Bubba','Mann','bubba.d.mann@gmail.com','814-555-5555')
@@ -119,10 +120,10 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
 // UPDATE `tbPeople_Shawn` SET `FirstName` =' FirstNameVALUE',`LastName` =' LastNameVALUE',`Email` =' EmailVALUE',`Phone` =' PhoneVALUE' WHERE id = 56
     foreach ($fields as $field){
       if($field == $lastField){
-        $sql .= "`$field` =' ". formRequest($field)."'";
+        $sql .= "`$field` =' ". formRequest(trim($field))."'";
         break;
       }
-      $sql .= "`$field` =' ". formRequest($field)."', ";
+      $sql .= "`$field` =' ". formRequest(trim($field))."', ";
     }
       $sql .= "WHERE id = ".formRequest("id");
       //echo "<BR>".$sql."<BR>";

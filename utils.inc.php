@@ -6,9 +6,12 @@ function formRequest($formName){
     return "";
 }
 }
+
 function createTable($colum){
-  global $activity, $conn, $table,$fields;
-  $stmt = $conn->prepare("SELECT * FROM `$table` ORDER BY `$fields[1]` ASC;");
+  global $activity, $conn, $table,$fields, $fieldsALL;
+  $sql="SELECT * FROM `$table` ORDER BY `$fieldsALL[1]` ASC;";
+  echo $sql;
+  $stmt = $conn->prepare($sql);
   $stmt->execute();
 
   $stmt->setFetchMode(PDO::FETCH_ASSOC);
