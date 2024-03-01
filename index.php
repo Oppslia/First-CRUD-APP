@@ -4,6 +4,7 @@ include "utils.inc.php";
 
 $activity = formRequest("activity");
 
+echo $activity;
 
 $table = "tbPeople_Shawn";
 $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ?";
@@ -16,7 +17,7 @@ $stmt->execute([$table]);
 $fields = $stmt->fetchAll(PDO::FETCH_COLUMN);
 $fieldsALL = $fields;
 $idIndex = array_search("id", $fields);
-unset($fields[$idIndex]); $fields = array_values($fields);
+//unset($fields[$idIndex]); $fields = array_values($fields);
 
 $lastField = $fields[count($fields)-1]; // sets a value equal to the last value so i don't have to use rtrim 
 // Query to retrieve all fields of the specified table
@@ -34,9 +35,15 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
   <br><br>
   
   <?php
-  //Table names = tbPeople_FirstName
-  
+  $ordering = formRequest("order");
+  if(is_int(array_search(rtrim($ordering, " DESC"), $fieldsALL))){
+      createTable("ORDER");
+  }
+  elseif (is_int(array_search(rtrim($ordering, " ASC"), $fieldsALL))){
+      createTable("ORDER");
+  }  
   switch ($activity) {
+    
     case "DOWNLOAD":
       createTable("DOWNLOAD");
       //header("Location: index.php?activity=READ");
@@ -90,9 +97,11 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
     break; // bye
 
     case "READ":
+      
       // R of cRud
       //Select (SQL Language) Data!
      createTable("READ");// make table with read param, dummy
+     
       
     break; //bye
 

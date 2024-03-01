@@ -6,13 +6,22 @@ function formRequest($formName){
     return "";
 }
 }
-
-function createTable($colum){
-  global $activity, $conn, $table,$fields, $fieldsALL;
-  $sql="SELECT * FROM `$table` ORDER BY `$fieldsALL[1]` ASC;";
+function sortData($field){
+  global $conn, $table;
+  $sql="SELECT * FROM `$table` ORDER BY $field;";
   echo $sql;
   $stmt = $conn->prepare($sql);
   $stmt->execute();
+  return $stmt;
+}
+function createTable($colum){
+  global  $ordering, $fieldsALL;
+  if ($colum == "ORDER"){
+    $stmt = sortData($ordering);
+    }
+  else{
+  $stmt = sortData($fieldsALL[0]." ASC");
+  }
 
   $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
@@ -48,8 +57,10 @@ function createTable($colum){
     } //-If
     fclose($myfile);
     
-    return; // exit faster without doign addition checks
+    return; // exit faster without doing addition checks
   } //<--------------------------DOWNLOAD
+  
+
 
   while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         if($firstRowPrinted == false) {
@@ -57,7 +68,12 @@ function createTable($colum){
           echo "<th>UPDATE</th>";
           echo "<th>DELETE</th>";
         foreach($row as $col_name => $val) {
-          echo "<th>$col_name</th>";    // Print Each Column Name
+          if ($col_name." ASC" == $ordering){        
+            echo "<th><a href='index.php?order=$col_name DESC'>$col_name</a></th>"; 
+          }   // Print Each Column Name
+          else{ 
+            echo "<th><a href='index.php?order=$col_name ASC'>$col_name</a></th>";
+          }
         }
         echo "</tr>";               // END Header Row
         $firstRowPrinted = true;
@@ -88,7 +104,7 @@ function writeForm($activity){
   }
     echo '<input type="submit" value="GO!"><br>';
     echo '</form>';
-    }
+  }
   
   if($activity == "UPDATE-PROCESS"){
     $stmt = $conn->prepare("SELECT * FROM `$table` WHERE id = ".formRequest("id"));
@@ -102,19 +118,18 @@ function writeForm($activity){
       echo '<input type="hidden" name="id" value="'.$row["id"].'">';
     foreach ($fields as $fieldName){
         echo '<input type="text" name="'.$fieldName.'" value="'.$row[$fieldName].'" placeholder="'.$fieldName.'"><br>';
-      //$sql= $sql."`$fieldName` =' ".$fieldName."VALUE',";
     }
-     // $sql .= " WHERE id = ".formRequest('id');
-      //$WHERE = strpos($sql, "WHERE");
+      echo '<input type="submit" value="GO!"><br>';
+      echo '</form>';
+    }   
+  }
+    
+
+
+
+
+ //$WHERE = strpos($sql, "WHERE");
      // $sql = substr_replace($sql, '', $WHERE - 2 , 1);
       //echo '<input type="hidden" name="sql" value="'.$sql.'">';
      // echo $sql;
-      echo '<input type="submit" value="GO!"><br>';
-      echo '</form>';
-      ///////////////////////////////////////////////////////////////////////$sql = str_replace(", WHERE", " WHERE", $sql); //bob
-      }
-      
-    }
-    
-
 ?>
