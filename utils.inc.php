@@ -9,29 +9,27 @@ function formRequest($formName){
 function sortData($field){
   global $conn, $table;
   $sql="SELECT * FROM `$table` ORDER BY $field;";
-  echo $sql;
   $stmt = $conn->prepare($sql);
   $stmt->execute();
-  return $stmt;
+  return array($stmt,$sql);
 }
-function createTable($colum){
+function createTable($directive){
   global  $ordering, $fieldsALL;
-  if ($colum == "ORDER"){
-    $stmt = sortData($ordering);
+  if ($directive == "ORDER"){
+    list($stmt,$sql) = sortData($ordering);
+    echo $sql;
     }
-  else{
-  $stmt = sortData($fieldsALL[0]." ASC");
+  elseif($directive == "READ" | $directive == "DOWNLOAD"){
+    list($stmt,$sql) = sortData($fieldsALL[0]." ASC");
+    
   }
-
   $stmt->setFetchMode(PDO::FETCH_ASSOC);
-
-  // Check if $result has anything in it or not (Returns a FALSE if no data in there).
     echo "<table border=1>";   // Start Table
     $firstRowPrinted = false;
    
     
     $myfile = fopen("myfile.csv", "w");
-    if ($colum == "DOWNLOAD"){
+    if ($directive == "DOWNLOAD"){
       while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       //DOWNLOAD--------------------------------->
       
@@ -68,10 +66,15 @@ function createTable($colum){
           echo "<th>UPDATE</th>";
           echo "<th>DELETE</th>";
         foreach($row as $col_name => $val) {
-          if ($col_name." ASC" == $ordering){        
+          if ($col_name." ASC" == $ordering){ 
             echo "<th><a href='index.php?order=$col_name DESC'>$col_name</a></th>"; 
           }   // Print Each Column Name
-          else{ 
+          else{
+            if ($ordering == "id"){ // Since this starts as the initial order of the data
+                                    // It has this to cirvumvent having to click it twice to change the sorting.
+                                    // The ordering would have no sort method, since and order request wasn't made yet.
+              echo "<th><a href='index.php?order=$col_name DESC'>$col_name</a></th>";
+            }    
             echo "<th><a href='index.php?order=$col_name ASC'>$col_name</a></th>";
           }
         }

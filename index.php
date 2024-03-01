@@ -27,7 +27,7 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
 <html>
 <head><title>Shawns's CRUD App</title></head>
 <body>
-  <a href="index.php?activity=READ">Home</a> |
+  <a href="index.php">Home</a> |
   <a href="index.php?activity=CREATE">Create</a> | 
   <a href="index.php?activity=DOWNLOAD">Download</a>
 
@@ -35,15 +35,22 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
   <br><br>
   
   <?php
-  $ordering = formRequest("order");
-  if(is_int(array_search(rtrim($ordering, " DESC"), $fieldsALL))){
-      createTable("ORDER");
-  }
-  elseif (is_int(array_search(rtrim($ordering, " ASC"), $fieldsALL))){
-      createTable("ORDER");
-  }  
+  
   switch ($activity) {
-    
+    default:
+      $ordering = formRequest("order");
+      if(is_int(array_search(rtrim($ordering, " DESC"), $fieldsALL))){
+        createTable("ORDER");
+      }
+      elseif (is_int(array_search(rtrim($ordering, " ASC"), $fieldsALL))){
+          createTable("ORDER");
+      }  
+      else{
+        createTable("READ"); // R of cRud
+      }
+     
+    break; //bye
+
     case "DOWNLOAD":
       createTable("DOWNLOAD");
       //header("Location: index.php?activity=READ");
@@ -92,19 +99,11 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
       
       $conn->exec($sql); // database go brrrrr.
       //echo "<BR>".$sql."<BR>"; //echo statement cuz need to see that sweet SWEET formatting
-      header("Location: index.php?activity=READ");
+      header("Location: index.php");
       
     break; // bye
 
-    case "READ":
-      
-      // R of cRud
-      //Select (SQL Language) Data!
-     createTable("READ");// make table with read param, dummy
-     
-      
-    break; //bye
-
+    
     case "UPDATE":
       // U of crUd
       //Update Data!
@@ -137,7 +136,7 @@ $lastField = $fields[count($fields)-1]; // sets a value equal to the last value 
       $sql .= "WHERE id = ".formRequest("id");
       //echo "<BR>".$sql."<BR>";
       $conn->exec($sql);
-      header("Location: index.php?activity=READ");
+      header("Location: index.php");
       
       break;
       
